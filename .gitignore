@@ -1,0 +1,44 @@
+# Documentación local
+claude.md
+
+# Entorno virtual
+venv/
+env/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Archivos de entorno
+.env
+.env.local
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Datos procesados (se pueden regenerar)
+data/processed/
+
+# Datos sensibles (descomentar si es necesario)
+# data/raw/
+# *.json
+
+# Modelos entrenados (descomentar si son muy pesados)
+# *.pkl
+# *.h5
+# *.pt
