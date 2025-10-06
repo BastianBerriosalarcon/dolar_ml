@@ -1,5 +1,5 @@
-# Documentación local
-claude.md
+# Claude Code configuración local
+.claude/
 
 # Entorno virtual
 venv/

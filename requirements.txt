@@ -4,9 +4,11 @@ requests-cache>=1.0.0
 pandas>=2.0.0
 numpy>=1.24.0
 
-# Machine Learning (para fases futuras)
+# Machine Learning
 scikit-learn>=1.3.0
 xgboost>=2.0.0
+pmdarima>=2.0.0  # AutoARIMA para series temporales
+lightgbm>=4.0.0  # Alternativa a XGBoost (opcional)
 
 # Visualización
 matplotlib>=3.7.0
@@ -14,8 +16,11 @@ seaborn>=0.12.0
 plotly>=5.14.0
 
 # Jupyter
-jupyter>=1.0.0
+jupyterlab>=4.0.0
 ipykernel>=6.25.0
+
+# Análisis estadístico de series temporales
+statsmodels>=0.14.0  # Para pruebas de estacionaridad (ADF test)
 
 # Optimización de hiperparámetros (opcional)
 optuna>=3.3.0

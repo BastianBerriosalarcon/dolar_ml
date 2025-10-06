@@ -1,39 +1,60 @@
 # DolarCLP-Predictor
 
-Sistema de predicción del tipo de cambio USD/CLP usando Machine Learning.
+Sistema de predicción del tipo de cambio USD/CLP usando Machine Learning con estrategia multi-modelo.
 
 ## Descripción
 
-Proyecto de Machine Learning para predecir el tipo de cambio del dólar estadounidense (USD) frente al peso chileno (CLP) utilizando análisis de series de tiempo y XGBoost.
+Proyecto de Machine Learning para predecir el tipo de cambio del dólar estadounidense (USD) frente al peso chileno (CLP) utilizando análisis de series de tiempo multivariadas. Implementa una estrategia comparativa de 3 modelos para seleccionar el mejor predictor.
 
-### Características
+### Características Principales
 
 - Descarga automática de datos históricos del Banco Central de Chile (30 años)
-- Feature engineering completo con 23 características
-- Análisis exploratorio de datos (EDA)
-- Modelo predictivo basado en XGBoost (en desarrollo)
+- Feature engineering avanzado con 23 características técnicas y temporales
+- Análisis exploratorio de datos (EDA) completo
+- **Estrategia multi-modelo**: Random Forest, XGBoost y ARIMA
+- Validación temporal con Time Series Cross-Validation
+- Pipeline completa de ML lista para producción
 
 ## Estado del Proyecto
 
-- [COMPLETADA] Fase 1: Adquisición de Datos - 10,958 registros
-- [COMPLETADA] Fase 2: Feature Engineering - 23 features
-- [PENDIENTE] Fase 3: Modelado XGBoost
+- [COMPLETADA] Fase 1: Adquisición de Datos - 10,958 registros descargados
+- [COMPLETADA] Fase 2: Feature Engineering - 23 features implementadas, 3,993 registros procesados
+- [PENDIENTE] Fase 3: Modelado Multi-Modelo (Random Forest + XGBoost + ARIMA)
 - [PENDIENTE] Fase 4: Evaluación y Backtesting
-- [PENDIENTE] Fase 5: Despliegue API
+- [PENDIENTE] Fase 5: Despliegue API REST
+
+## Estrategia de Modelado
+
+Este proyecto implementa una **comparación de 3 modelos** para seleccionar el mejor predictor:
+
+| Modelo | Tipo | Propósito |
+|--------|------|-----------|
+| **Random Forest** | ML Baseline | Robusto, fácil de interpretar |
+| **XGBoost** | Gradient Boosting | Alto rendimiento, modelo principal |
+| **AutoARIMA** | Estadístico | Baseline clásico de series temporales |
+
+**Criterio de selección**: MAE, RMSE, MAPE y R² en conjunto de test temporal
 
 ## Estructura del Proyecto
 
 ```
 dolar_ml/
 ├── data/
-│   ├── raw/              # Datos crudos del BCCh
-│   └── processed/        # Datos procesados con features
-├── notebooks/            # Jupyter notebooks para análisis
+│   ├── raw/              # Datos crudos del BCCh (10,958 registros)
+│   └── processed/        # Datos procesados con features (3,993 registros)
+├── notebooks/
+│   ├── 01_data_acquisition.ipynb   # Descarga y validación
+│   ├── 02_eda.ipynb                # Análisis exploratorio
+│   └── 03_feature_engineering.ipynb # Documentación de features
 ├── src/
-│   ├── data/            # Módulos de adquisición de datos
-│   └── features/        # Feature engineering
-├── download_data.py     # Script de descarga
-└── requirements.txt     # Dependencias
+│   ├── data/
+│   │   ├── fetch_bcch.py           # Extracción API BCCh
+│   │   └── preprocess.py           # Procesamiento de datos
+│   └── features/
+│       └── build_features.py       # Feature engineering completo
+├── download_data.py                # Script principal de descarga
+├── requirements.txt                # Dependencias completas
+└── claude.md                       # Documentación técnica detallada
 ```
 
 ## Instalación
@@ -79,7 +100,7 @@ python -m src.features.build_features
 ### 3. Análisis exploratorio
 
 ```bash
-jupyter notebook notebooks/02_eda.ipynb
+jupyter lab
 ```
 
 ## Dataset
@@ -90,31 +111,85 @@ jupyter notebook notebooks/02_eda.ipynb
 - **Registros totales**: 10,958
 - **Registros procesados**: 3,993 (con features completas)
 
-## Features Implementadas
+## Features Implementadas (23 características)
 
-- **Lags**: t-1, t-7, t-30
-- **Moving Averages**: 7, 30, 90 días
-- **Temporales**: día, mes, trimestre, año
-- **Técnicas**: ROC, Momentum, retornos diarios
-- **Volatilidad**: desviación estándar móvil, rangos
+### Variables Lag (3)
+- `lag_1`, `lag_7`, `lag_30`: Valores históricos desplazados
 
-## Tecnologías
+### Promedios Móviles (3)
+- `ma_7`, `ma_30`, `ma_90`: Suavizan tendencias de corto, medio y largo plazo
 
-- Python 3.12
-- Pandas, NumPy
-- Scikit-learn, XGBoost
-- Matplotlib, Seaborn
-- Jupyter Notebook
+### Features Temporales (4)
+- `day_of_week`, `month`, `quarter`, `year`: Capturan estacionalidad
+
+### Indicadores Técnicos (5)
+- `roc_7`, `roc_30`: Rate of Change
+- `momentum_7`, `momentum_30`: Momentum
+- `daily_return`: Retornos diarios porcentuales
+
+### Volatilidad (3)
+- `volatility_7`, `volatility_30`: Desviación estándar móvil
+- `range_7`: Rango de precio (max-min)
+
+### Objetivo
+- `Valor`: Tipo de cambio USD/CLP (variable target)
+
+## Stack Tecnológico
+
+### Core
+- **Python 3.12**
+- **Pandas** & **NumPy**: Manipulación de datos
+- **Requests**: API del Banco Central de Chile
+
+### Machine Learning
+- **Scikit-learn**: Preprocesamiento, métricas, validación, Random Forest
+- **XGBoost**: Gradient boosting avanzado
+- **pmdarima**: AutoARIMA para series temporales
+- **statsmodels**: Análisis estadístico (ADF test)
+
+### Visualización
+- **Matplotlib** & **Seaborn**: Gráficos estáticos
+- **Plotly**: Gráficos interactivos (recomendado)
+
+### Desarrollo
+- **JupyterLab**: Notebooks interactivos
+- **Git**: Control de versiones
+
+## Métricas de Éxito Esperadas
+
+### Técnicas
+- **MAPE < 2%**: Excelente
+- **MAPE 2-5%**: Bueno
+- **MAPE > 5%**: Requiere mejoras
+
+### De Negocio
+- Precisión en predicciones a 1 día: > 95%
+- Precisión en predicciones a 7 días: > 85%
+- Tiempo de inferencia: < 100ms
+
+## Próximos Pasos
+
+1. Implementar los 3 modelos comparativos
+2. Crear notebook `04_modeling.ipynb` con comparación
+3. Seleccionar modelo ganador según métricas
+4. Implementar backtesting con walk-forward validation
+5. Desarrollar API REST con FastAPI
+6. Dockerizar para despliegue
 
 ## Contribuir
 
 Las contribuciones son bienvenidas. Por favor:
 
 1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
+2. Crea una rama para tu feature (`git checkout -b feature/NuevaFeature`)
+3. Commit tus cambios (`git commit -m 'Agregar NuevaFeature'`)
+4. Push a la rama (`git push origin feature/NuevaFeature`)
 5. Abre un Pull Request
+
+**Estándares de código**:
+- NO usar emojis en código, comentarios, prints o notebooks
+- Seguir convenciones PEP 8
+- Documentar funciones con docstrings
 
 ## Licencia
 
@@ -122,8 +197,10 @@ Por definir
 
 ## Autor
 
-Bastián Berríos - bastianberrios.a@gmail.com
+**Bastián Berríos**
+Email: bastianberrios.a@gmail.com
 
 ## Agradecimientos
 
-- Banco Central de Chile por proporcionar la API de datos
+- **Banco Central de Chile** por proporcionar la API de datos históricos
+- Comunidad open-source de Python y bibliotecas de ML
