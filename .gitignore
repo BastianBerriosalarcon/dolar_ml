@@ -20,6 +20,16 @@ __pycache__/
 # Jupyter Notebook
 .ipynb_checkpoints
 
+# Testing y Coverage
+htmlcov/
+.coverage
+.coverage.*
+.pytest_cache/
+
+# Logs
+logs/
+*.log
+
 # IDEs
 .vscode/
 .idea/

@@ -1,0 +1,68 @@
+# Configuración del proyecto DolarCLP Predictor
+
+# Configuración del modelo XGBoost
+model:
+  name: "xgboost"
+  params:
+    n_estimators: 100
+    learning_rate: 0.1
+    max_depth: 5
+    min_child_weight: 1
+    subsample: 0.8
+    colsample_bytree: 0.8
+    gamma: 0
+    random_state: 42
+    n_jobs: -1
+
+# Configuración de Cross-Validation
+cross_validation:
+  n_splits: 5
+  test_size: 0.2
+  shuffle: false  # No shuffle para series temporales
+
+# Configuración de Features
+features:
+  # Lags a crear
+  lags: [1, 7, 30]
+
+  # Moving averages
+  moving_averages: [7, 30, 90]
+
+  # Indicadores técnicos
+  technical_indicators:
+    - roc
+    - momentum
+    - volatility
+
+# Configuración de datos
+data:
+  raw_path: "data/raw/dolar_bcch.csv"
+  processed_path: "data/processed/dolar_features.csv"
+
+  # Serie del BCCh
+  bcch_series: "F073.TCO.PRE.Z.D"
+
+  # Rango de fechas (dejar vacío para usar todas)
+  start_date: null
+  end_date: null
+
+# Configuración de modelos guardados
+models:
+  output_dir: "models/"
+  model_filename: "best_model_xgboost.pkl"
+  feature_names_file: "feature_names.txt"
+  metrics_file: "metrics.json"
+
+# Configuración de logging
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  log_dir: "logs/"
+  log_file: "dolar_ml.log"
+
+# Configuración de la API
+api:
+  host: "0.0.0.0"
+  port: 8000
+  reload: true
+  workers: 1
