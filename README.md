@@ -39,22 +39,59 @@ Este proyecto implementa una **comparación de 3 modelos** para seleccionar el m
 
 ```
 dolar_ml/
+├── config/                          # Configuración centralizada
+│   ├── config.yaml                 # Parámetros del proyecto
+│   ├── logging_config.yaml         # Configuración de logging
+│   └── README.md                   # Documentación de configuración
 ├── data/
-│   ├── raw/              # Datos crudos del BCCh (10,958 registros)
-│   └── processed/        # Datos procesados con features (3,993 registros)
+│   ├── raw/                        # Datos crudos del BCCh (10,958 registros)
+│   └── processed/                  # Datos procesados con features (3,993 registros)
+├── logs/                           # Logs de aplicación (ignorado por git)
+├── models/                         # Modelos entrenados
+│   ├── best_model_xgboost.pkl     # Modelo XGBoost
+│   ├── feature_names.txt          # Nombres de features
+│   └── metrics.json               # Métricas de evaluación
 ├── notebooks/
 │   ├── 01_data_acquisition.ipynb   # Descarga y validación
 │   ├── 02_eda.ipynb                # Análisis exploratorio
-│   └── 03_feature_engineering.ipynb # Documentación de features
+│   ├── 03_feature_engineering.ipynb # Documentación de features
+│   └── 04_modeling.ipynb           # Entrenamiento de modelos
+├── scripts/
+│   └── setup.sh                    # Script de configuración
 ├── src/
+│   ├── api/
+│   │   └── app.py                  # API REST con FastAPI
 │   ├── data/
 │   │   ├── fetch_bcch.py           # Extracción API BCCh
 │   │   └── preprocess.py           # Procesamiento de datos
-│   └── features/
-│       └── build_features.py       # Feature engineering completo
+│   ├── features/
+│   │   └── build_features.py       # Feature engineering completo
+│   ├── models/
+│   │   ├── train.py                # Entrenamiento de modelos
+│   │   └── predict.py              # Predicciones
+│   └── utils/
+│       ├── config.py               # Carga de configuración
+│       ├── logger.py               # Sistema de logging
+│       └── metrics.py              # Métricas personalizadas
+├── tests/
+│   ├── test_data/                  # Tests de módulo data
+│   ├── test_features/              # Tests de feature engineering
+│   ├── test_models/                # Tests de modelos
+│   ├── test_api/                   # Tests de API
+│   ├── fixtures/                   # Datos de prueba
+│   └── conftest.py                 # Configuración de pytest
+├── .dockerignore                   # Archivos a ignorar en Docker
+├── .flake8                         # Configuración de flake8
+├── .gitignore                      # Archivos a ignorar en git
+├── CONTRIBUTING.md                 # Guía de contribución
+├── Dockerfile                      # Imagen Docker
+├── docker-compose.yml              # Orquestación de contenedores
 ├── download_data.py                # Script principal de descarga
-├── requirements.txt                # Dependencias completas
-└── claude.md                       # Documentación técnica detallada
+├── LICENSE                         # Licencia del proyecto
+├── pyproject.toml                  # Configuración de herramientas Python
+├── requirements.txt                # Dependencias de producción
+├── requirements-dev.txt            # Dependencias de desarrollo
+└── README.md                       # Este archivo
 ```
 
 ## Instalación
