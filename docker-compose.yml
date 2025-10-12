@@ -5,25 +5,52 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: dolar_predictor_api
+    container_name: dolar_ml_api
     ports:
       - "8000:8000"
-    environment:
-      - LOG_LEVEL=info
-      - PYTHONUNBUFFERED=1
     volumes:
-      # Montar modelos (para hot-reload sin rebuild)
-      - ./models:/app/models:ro
+      - ./models:/app/models
+      - ./logs:/app/logs
+      - ./data:/app/data
+    environment:
+      - BC_USER=${BC_USER:-}
+      - BC_PASS=${BC_PASS:-}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - DOLAR_VERBOSE=${DOLAR_VERBOSE:-0}
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/health', timeout=5)"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
     networks:
-      - dolar_network
+      - dolar_ml_network
+
+  # Servicio opcional para entrenamiento
+  trainer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dolar_ml_trainer
+    volumes:
+      - ./models:/app/models
+      - ./logs:/app/logs
+      - ./data:/app/data
+    environment:
+      - BC_USER=${BC_USER:-}
+      - BC_PASS=${BC_PASS:-}
+      - DOLAR_VERBOSE=${DOLAR_VERBOSE:-1}
+    command: python -m src.models.train --data data/processed/dolar_features.csv --output-dir models --model all
+    networks:
+      - dolar_ml_network
+    profiles:
+      - training
 
 networks:
-  dolar_network:
+  dolar_ml_network:
     driver: bridge
+
+volumes:
+  models_data:
+  logs_data:

@@ -1,13 +1,16 @@
 """
 Script de inferencia para predicciones en producción.
+Incluye funciones para predicción simple, en rango, y carga de modelos.
 """
 import argparse
 import pickle
 import logging
 from pathlib import Path
+from datetime import datetime, timedelta
 import pandas as pd
+import numpy as np
 import json
-from typing import Dict, Union, List
+from typing import Dict, Union, List, Tuple
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -146,6 +149,129 @@ class DolarPredictor:
         else:
             logger.warning("El modelo no tiene feature_importances_")
             return pd.DataFrame()
+
+
+def load_model(model_path: str) -> DolarPredictor:
+    """
+    Carga un modelo entrenado.
+
+    Args:
+        model_path: Ruta al archivo del modelo (.pkl)
+
+    Returns:
+        Instancia de DolarPredictor
+
+    Example:
+        predictor = load_model('models/xgboost.pkl')
+    """
+    return DolarPredictor(model_path)
+
+
+def predict_single(model_path: str, features: Dict) -> Tuple[float, Dict]:
+    """
+    Realiza una predicción simple con features proporcionadas.
+
+    Args:
+        model_path: Ruta al modelo entrenado
+        features: Dict con features para predicción
+
+    Returns:
+        Tuple con (predicción, metadata)
+
+    Example:
+        prediction, metadata = predict_single(
+            'models/xgboost.pkl',
+            {'lag_1': 950.5, 'ma_7': 945.2, ...}
+        )
+    """
+    predictor = load_model(model_path)
+    prediction = predictor.predict(features)
+
+    metadata = {
+        'prediction': prediction,
+        'model': Path(model_path).name,
+        'timestamp': datetime.now().isoformat(),
+        'features_used': list(features.keys())
+    }
+
+    return prediction, metadata
+
+
+def predict_range(model_path: str, features_df: pd.DataFrame, n_days: int = 7) -> pd.DataFrame:
+    """
+    Realiza predicciones para un rango de días.
+
+    NOTA: Esta es una versión simplificada. Para predicciones multi-step reales
+    necesitarías implementar rolling predictions con features autogeneradas.
+
+    Args:
+        model_path: Ruta al modelo entrenado
+        features_df: DataFrame con features para cada día
+        n_days: Número de días a predecir
+
+    Returns:
+        DataFrame con predicciones
+
+    Example:
+        predictions_df = predict_range(
+            'models/xgboost.pkl',
+            features_df,
+            n_days=7
+        )
+    """
+    predictor = load_model(model_path)
+
+    # Predecir para las primeras n_days filas
+    subset = features_df.head(n_days)
+    predictions = predictor.predict(subset)
+
+    result = pd.DataFrame({
+        'date': subset.index,
+        'prediction': predictions,
+        'model': Path(model_path).name
+    })
+
+    logger.info(f"Predicciones generadas para {n_days} días")
+    return result
+
+
+def compare_models_predictions(model_paths: List[str], features: Union[Dict, pd.DataFrame]) -> pd.DataFrame:
+    """
+    Compara predicciones de múltiples modelos.
+
+    Args:
+        model_paths: Lista de rutas a modelos entrenados
+        features: Dict o DataFrame con features
+
+    Returns:
+        DataFrame con predicciones de cada modelo
+
+    Example:
+        comparison = compare_models_predictions(
+            ['models/random_forest.pkl', 'models/xgboost.pkl'],
+            features_dict
+        )
+    """
+    results = {}
+
+    for model_path in model_paths:
+        model_name = Path(model_path).stem
+        try:
+            predictor = load_model(model_path)
+            prediction = predictor.predict(features)
+
+            if isinstance(prediction, pd.Series):
+                results[model_name] = prediction
+            else:
+                results[model_name] = [prediction]
+
+            logger.info(f"Predicción de {model_name}: {prediction if not isinstance(prediction, pd.Series) else prediction.mean():.2f}")
+
+        except Exception as e:
+            logger.error(f"Error con modelo {model_name}: {e}")
+            results[model_name] = None
+
+    return pd.DataFrame(results)
 
 
 def main():

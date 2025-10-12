@@ -7,52 +7,40 @@ __pycache__/
 venv/
 env/
 ENV/
-*.egg-info/
-
-# Data (no incluir en imagen - demasiado grande)
-data/raw/*.csv
-data/processed/*.csv
 
 # Git
 .git/
 .gitignore
-.gitattributes
 
-# IDEs
+# IDE
 .vscode/
 .idea/
 *.swp
 *.swo
-.DS_Store
-
-# Notebooks (opcional, incluir si quieres demos)
-# notebooks/
 
 # Tests
-tests/
 .pytest_cache/
-htmlcov/
 .coverage
-*.cover
+htmlcov/
 
-# Docs
+# Notebooks
+.ipynb_checkpoints/
+notebooks/
+
+# Documentation
+README.md
+docs/
 *.md
-!README.md
 
-# Environment
-.env
-.env.local
-.env.*
+# OS
+.DS_Store
+Thumbs.db
+
+# Large files
+*.pkl
+*.h5
+*.joblib
 
 # Logs
-*.log
 logs/
-
-# CI/CD
-.github/
-.gitlab-ci.yml
-
-# Misc
-*.bak
-*.tmp
-.cache/
+*.log
