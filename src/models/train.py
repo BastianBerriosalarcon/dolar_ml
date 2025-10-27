@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 def calculate_metrics(y_true, y_pred):
     """Calcula metricas de evaluacion."""
     mae = mean_absolute_error(y_true, y_pred)
-    rmse = mean_squared_error(y_true, y_pred, squared=False)
+    rmse = np.sqrt(mean_squared_error(y_true, y_pred))
     r2 = r2_score(y_true, y_pred)
     mape = (np.abs((y_true - y_pred) / y_true).mean()) * 100
     return {'mae': mae, 'rmse': rmse, 'r2': r2, 'mape': mape}
@@ -165,7 +165,7 @@ def train_all_models(data_path: str, output_dir: str = 'models', n_splits: int =
     logger.info(f"Cargando datos desde {data_path}")
     df = pd.read_csv(data_path, index_col='Fecha', parse_dates=True)
 
-    feature_cols = [col for col in df.columns if col != 'Valor']
+    feature_cols = [col for col in df.columns if col not in ['Valor', 'statusCode']]
     X = df[feature_cols]
     y = df['Valor']
 
@@ -327,7 +327,7 @@ def train_model(
     df = pd.read_csv(data_path, index_col='Fecha', parse_dates=True)
 
     # Separar features y target
-    feature_cols = [col for col in df.columns if col != 'Valor']
+    feature_cols = [col for col in df.columns if col not in ['Valor', 'statusCode']]
     X = df[feature_cols]
     y = df['Valor']
 
@@ -365,7 +365,7 @@ def train_model(
         # Evaluar
         y_pred = model.predict(X_val)
         mae = mean_absolute_error(y_val, y_pred)
-        rmse = mean_squared_error(y_val, y_pred, squared=False)
+        rmse = np.sqrt(mean_squared_error(y_val, y_pred))
         r2 = r2_score(y_val, y_pred)
         mape = (abs((y_val - y_pred) / y_val).mean()) * 100
 

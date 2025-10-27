@@ -42,13 +42,22 @@ logs/
 Thumbs.db
 
 # Datos procesados (se pueden regenerar)
-data/processed/
+# data/processed/
 
 # Datos sensibles (descomentar si es necesario)
 # data/raw/
-# *.json
 
-# Modelos entrenados (descomentar si son muy pesados)
-# *.pkl
-# *.h5
-# *.pt
+# Modelos entrenados (muy pesados, se pueden regenerar)
+models/*.pkl
+models/*.h5
+models/*.pt
+
+# Mantener estructura y metadatos de modelos
+!models/.gitkeep
+!models/model_comparison.json
+!models/feature_names.txt
+!models/metrics.json
+
+# Archivos de entrenamiento temporales
+training_log.txt
+*.tmp

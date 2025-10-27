@@ -19,9 +19,21 @@ Proyecto de Machine Learning para predecir el tipo de cambio del dólar estadoun
 
 - [COMPLETADA] Fase 1: Adquisición de Datos - 10,958 registros descargados
 - [COMPLETADA] Fase 2: Feature Engineering - 23 features implementadas, 3,993 registros procesados
-- [PENDIENTE] Fase 3: Modelado Multi-Modelo (Random Forest + XGBoost + ARIMA)
+- [COMPLETADA] Fase 3: Modelado Multi-Modelo - 3 modelos entrenados y comparados
 - [PENDIENTE] Fase 4: Evaluación y Backtesting
 - [PENDIENTE] Fase 5: Despliegue API REST
+
+### Resultados del Modelo (Actualizado)
+
+**Mejor modelo**: XGBoost con MAE de 24.89 CLP (3.27% MAPE)
+
+| Modelo | MAE (CLP) | RMSE (CLP) | R² | MAPE (%) |
+|--------|-----------|------------|-----|----------|
+| XGBoost | 24.89 ± 26.43 | 36.25 ± 34.25 | 0.407 | 3.27 ± 3.66 |
+| Random Forest | 29.95 ± 28.43 | 42.02 ± 35.40 | 0.286 | 4.00 ± 3.90 |
+| ARIMA | 58.70 ± 19.84 | 76.01 ± 21.68 | -0.539 | N/A |
+
+Validación con Time Series Cross-Validation (5 folds)
 
 ## Estrategia de Modelado
 
@@ -134,7 +146,17 @@ python download_data.py
 python -m src.features.build_features
 ```
 
-### 3. Análisis exploratorio
+### 3. Entrenar modelos
+
+```bash
+# Entrenar todos los modelos (Random Forest, XGBoost, ARIMA)
+python src/models/train.py --model all --n-splits 5
+
+# Solo entrenar XGBoost
+python src/models/train.py --model xgboost
+```
+
+### 4. Análisis exploratorio
 
 ```bash
 jupyter lab
@@ -206,12 +228,12 @@ jupyter lab
 
 ## Próximos Pasos
 
-1. Implementar los 3 modelos comparativos
-2. Crear notebook `04_modeling.ipynb` con comparación
-3. Seleccionar modelo ganador según métricas
-4. Implementar backtesting con walk-forward validation
-5. Desarrollar API REST con FastAPI
-6. Dockerizar para despliegue
+1. Implementar backtesting con walk-forward validation
+2. Optimizar hiperparámetros con Optuna
+3. Integrar fuentes adicionales (TPM, precio del cobre)
+4. Desarrollar API REST con FastAPI
+5. Dockerizar para despliegue
+6. Implementar monitoreo de drift del modelo
 
 ## Contribuir
 
